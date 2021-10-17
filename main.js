@@ -1,5 +1,4 @@
-const { app, BrowserWindow } = require('electron')
-const { autoUpdater } = require("electron-updater")
+const { app, BrowserWindow, autoUpdater, dialog } = require('electron')
 const path = require('path')
 
 autoUpdater.updateConfigPath = path.join(__dirname, 'dev-app-update.yml');
@@ -14,7 +13,8 @@ const dispatch = (data) => {
 const createDefaultWindow = () => {
   win = new BrowserWindow({
     webPreferences: {
-        nodeIntegration: true
+      nodeIntegration: true,
+      contextIsolation: false
     }
   })
 
@@ -39,7 +39,9 @@ app.on('ready', () => {
   
   createDefaultWindow()
 
-  autoUpdater.checkForUpdatesAndNotify()
+  setInterval(() => {
+    autoUpdater.checkForUpdatesAndNotify()
+  }, 60000)
 
   win.webContents.on('did-finish-load', () => {
     win.webContents.send('version', app.getVersion())
@@ -53,18 +55,23 @@ app.on('window-all-closed', () => {
 
 
 autoUpdater.on('checking-for-update', () => {
+  console.log('checking-for-update', 'check-update');
   dispatch('Checking for update...')
 })
 
 autoUpdater.on('update-available', (info) => {
+  console.log('update-available', info);
   dispatch('Update available.')
 })
 
 autoUpdater.on('update-not-available', (info) => {
+  console.log('update-not-available', info);
   dispatch('Update not available.')
 })
 
 autoUpdater.on('error', (err) => {
+  console.error('There was a problem updating the application')
+  console.error(err)
   dispatch('Error in auto-updater. ' + err)
 })
 
@@ -80,5 +87,17 @@ autoUpdater.on('download-progress', (progressObj) => {
 })
 
 autoUpdater.on('update-downloaded', (info) => {
+  console.log('update-downloaded', info);
   dispatch('Update downloaded')
+  const dialogOpts = {
+    type: 'info',
+    buttons: ['Restart'],
+    title: 'Application Update',
+    message: process.platform === 'win32' ? releaseNotes : releaseName,
+    detail: 'A new version has been downloaded. Restart the application to apply the updates.'
+  }
+
+  dialog.showMessageBox(dialogOpts).then((returnValue) => {
+    if (returnValue.response === 0) autoUpdater.quitAndInstall()
+  })
 })

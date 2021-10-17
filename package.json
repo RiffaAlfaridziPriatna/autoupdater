@@ -1,6 +1,6 @@
 {
   "name": "auto-updater",
-  "version": "1.0.0",
+  "version": "1.7.0",
   "description": "Electron app auto updater",
   "main": "main.js",
   "scripts": {
@@ -8,11 +8,12 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "postinstall": "electron-builder install-app-deps",
-    "release": "electron-builder build"
+    "release": "electron-builder --mac --win -p always"
   },
   "build": {
     "appId": "com.electron.autoupdater",
     "productName": "AutoUpdater",
+    "artifactName": "AutoUpdater.${ext}",
     "mac": {
       "category": "public.app-category.developer-tools",
       "type": "distribution"
@@ -28,7 +29,8 @@
   "author": "Riffa Alfaridzi Priatna",
   "devDependencies": {
     "electron": "^15.2.0",
-    "electron-builder": "^22.13.1"
+    "electron-builder": "^22.13.1",
+    "electron-winstaller": "^5.0.0"
   },
   "dependencies": {
     "electron-updater": "^4.3.9"

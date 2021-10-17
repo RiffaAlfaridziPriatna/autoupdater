@@ -1,4 +1,4 @@
-const { ipcRenderer } = require('electron');
+const { ipcRenderer } = require("electron");
 
 const select = selector => document.querySelector(selector)
 
@@ -15,9 +15,11 @@ ipcRenderer.on('message', (event, text) => {
 })
 
 ipcRenderer.on('version', (event, text) => {
+  console.log(text);
   version.innerText = text
 })
 
 ipcRenderer.on('download-progress', (event, text) => {
+  console.log(text);
   progressBar.style.width = `${text}%`
 })
