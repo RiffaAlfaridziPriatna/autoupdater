@@ -2,7 +2,6 @@ const { app, BrowserWindow, autoUpdater, dialog } = require('electron')
 const path = require('path')
 
 autoUpdater.updateConfigPath = path.join(__dirname, 'dev-app-update.yml');
-console.log(path.join(__dirname, 'dev-app-update.yml'))
 
 let win
 
@@ -55,23 +54,18 @@ app.on('window-all-closed', () => {
 
 
 autoUpdater.on('checking-for-update', () => {
-  console.log('checking-for-update', 'check-update');
   dispatch('Checking for update...')
 })
 
 autoUpdater.on('update-available', (info) => {
-  console.log('update-available', info);
   dispatch('Update available.')
 })
 
 autoUpdater.on('update-not-available', (info) => {
-  console.log('update-not-available', info);
   dispatch('Update not available.')
 })
 
 autoUpdater.on('error', (err) => {
-  console.error('There was a problem updating the application')
-  console.error(err)
   dispatch('Error in auto-updater. ' + err)
 })
 
@@ -87,7 +81,6 @@ autoUpdater.on('download-progress', (progressObj) => {
 })
 
 autoUpdater.on('update-downloaded', (info) => {
-  console.log('update-downloaded', info);
   dispatch('Update downloaded')
   const dialogOpts = {
     type: 'info',
