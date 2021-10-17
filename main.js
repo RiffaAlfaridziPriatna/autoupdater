@@ -1,4 +1,5 @@
-const { app, BrowserWindow, autoUpdater, dialog } = require('electron')
+const { app, BrowserWindow, dialog } = require('electron')
+const { autoUpdater } = require("electron-updater")
 const path = require('path')
 
 autoUpdater.updateConfigPath = path.join(__dirname, 'dev-app-update.yml');
@@ -13,7 +14,8 @@ const createDefaultWindow = () => {
   win = new BrowserWindow({
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false,
+      devTools: !app.isPackaged
     }
   })
 
@@ -37,6 +39,7 @@ Object.defineProperty(app, 'isPackaged', {
 app.on('ready', () => {
   
   createDefaultWindow()
+  autoUpdater.checkForUpdatesAndNotify()
 
   setInterval(() => {
     autoUpdater.checkForUpdatesAndNotify()
@@ -86,7 +89,7 @@ autoUpdater.on('update-downloaded', (info) => {
     type: 'info',
     buttons: ['Restart'],
     title: 'Application Update',
-    message: process.platform === 'win32' ? releaseNotes : releaseName,
+    message: process.platform === 'win32' ? info.releaseNotes ? info.releaseNotes : '' : info.releaseName ? info.releaseName : '',
     detail: 'A new version has been downloaded. Restart the application to apply the updates.'
   }
 
